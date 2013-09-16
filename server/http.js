@@ -2,15 +2,9 @@
  * Simple web server to interact with git
  */
 
-var http = require('http');
 var git = require("../");
 var fs = require("fs");
-
 var server = require("node-router").getServer();
-
-function readHttpFile(path, callback) {
-	fs.readFile("http/" + path, 'utf8', callback);
-}
 
 // Root
 server.get("/", function (request, response) {
@@ -28,15 +22,30 @@ server.get("/git", function (request, response) {
 	response.end("GIT");
 });
 
-// JS loader
-server.get(new RegExp("^/js(/(\\S+/)*\\S+\\.js)$"), function (request, response, match) {	
+// Text File loader
+server.get(new RegExp("^/((\\S+/)*\\S+\\.(\\S+))$"), function (request, response, match, a, ext) {	
+	
+	var contentType;
+
+	switch (ext) {
+		case "js": 		contentType = "text/javascript"; break;
+		case "css": 	contentType = "text/css"; break;
+		case "html": 	contentType = "text/html"; break;
+		default: 		contentType = "text/plain"; break;
+	}
 
 	readHttpFile(match, function(err, data) {
-		response.writeHead(200, {"Content-Type": "text/javascript"});
+
+		response.writeHead(data ? 200 : 404, {"Content-Type": contentType});
 		response.end(data);
 	});	
 });
 
+function readHttpFile(path, callback) {
+	var url = "http/" + path;
+	fs.readFile(url, 'utf8', callback);
+	console.log("Loading " + url);
+}
 
 // Listen on port 8080
 server.listen(8080);
