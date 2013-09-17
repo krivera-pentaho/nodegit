@@ -7,31 +7,61 @@
 		<link href="js/lib/jquery/jquery-ui/css/ui-lightness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" type="text/css">
 	</head>
 	<body>
-		<div id="window-content">
+		<div id="window-content">		
 
 			<!-- Header -->
-			<div id="header" class="row">
-				<div class="span12 center">
-					HEADER
+			<div id="header" class="row-fluid">
+				<div class="span12 text-center">
+					<h1>Git</h1>
 				</div>
 			</div>
 
 			<!-- Body -->
-			<div id="body" class="row">
-				<div id="nav" class="span3 left">
-					NAV
+			<div id="body-container" class="container-fluid">		
+				<div id="body" class="row-fluid">
+					<div id="nav" class="span2 text-center well">
+						<ul class="nav nav-pills nav-stacked">
+							<li class="active"><a href="#">Home</a></li>
+							<li><a href="#">TEST</a></li>
+						</ul>
+						<button id="add-repo-btn" class="btn">Add Repo</button>
+					</div>
+					<div id="content" class="span10 text-center well">
+					</div>				
 				</div>
-				<div id="content" class="span9 right">
-					CONTENT
-				</div>				
 			</div>
 
-			<!-- Footer -->
+			<!-- Footer 
 			<div id="footer" class="row">
 				<div id="footer" class="span12 center">
 					FOOTER
 				</div>
-			</div>
+			</div>-->
+		</div>
+
+		<!-- MODALS -->
+		<div id="add-repo-modal" class="modal hide fade">
+			<div class="modal-header">
+		    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		    	<h3>Add Repository</h3>
+		  	</div>
+		  	<div class="modal-body">
+		  		<label id="repo-alias-label" for="repo-path">Repository Alias:</label>
+				<input id="repo-alias"></input>
+				<br />
+				<label id="repo-path-label" for="repo-path">Local Path:</label>
+				<input id="repo-path"></input>
+		  	</div>
+		  	<div class="modal-footer">
+		    	<a href="#" class="btn" data-dismiss="modal">Cancel</a>
+		    	<a id="add-repo-path-btn" href="#" class="btn btn-primary">Add</a>
+		  	</div>
+		</div>
+
+		<!-- ALERTS -->
+		<div id="alert-container" class="hide">
+		  <button type="button" class="close" data-dismiss="alert">&times;</button>
+		  <div id="alert-message"></div>		  
 		</div>
 	</body>
 </html>

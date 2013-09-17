@@ -1,11 +1,13 @@
-.center {
-	text-align: center;
+#header {
+	background: url("../img/header_bg_1.png") repeat;
+	color: #FFF;
+	height: 100px;
 }
 
-.left {
-	text-align: left;
+#body-container {
+	padding-top: 20px;
 }
 
-.right {
-	text-align: right;
+LABEL {
+	display: inline;
 }
