@@ -8,6 +8,39 @@
 	padding-top: 20px;
 }
 
-LABEL {
-	display: inline;
+#repository-objects {
+	margin-top: 10px;
+}
+
+.repository-object {
+	border: solid 1px #000;
+	width: 125px;
+	cursor: pointer;
+	height: 150px;
+	display: inline-block;
+	margin-right: 10px;
+
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.repository-object.active .title {
+	background-color: #08c;	
+}
+
+.repository-object .title {
+	height: 20px;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	background-color: #AAA;
+	font-weight: bold;
+	overflow: hidden;
+}
+
+.repository-object .content {
+	overflow: hidden;
 }

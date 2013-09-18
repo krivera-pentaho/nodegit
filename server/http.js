@@ -2,13 +2,14 @@
  * Simple web server to interact with git
  */
 
-var git = require("../");
-var gitUtil = require("gitUtil.js");
 var fs = require("fs");
-var url = require("url");
+var git = require("../");
+var gitUtil = require("gitUtil");
+var cfgUtil = require("cfgUtil");
 
 var nodeRouter = require("node-router");
 var server = nodeRouter.getServer();
+var url = require("url");
 
 // Root
 server.get("/", function (request, response) {
@@ -47,6 +48,79 @@ server.get(new RegExp("^/((\\S+/)*\\S+(\\.\\S+))$"), function (request, response
 		response.end(data);
 	});	
 });
+
+// Get config properties
+server.get("/cfg/all", function(request, response) {
+	response.writeHead(200, {"Content-Type": nodeRouter.mime.getMime(".json")});
+	response.end(JSON.stringify(cfgUtil.read.properties()));
+});
+
+// Get Single cfg property
+server.get("/cfg/single", function(request, response) {
+	var queryData = url.parse(request.url, true).query;
+	var property = queryData.property;
+
+	response.writeHead(200, {"Content-Type": nodeRouter.mime.getMime(".txt")});
+	response.end(cfgUtil.read.property(property));
+});
+
+// Put a single property 
+server.post("/cfg/single", function(request, response) {
+	var queryData = url.parse(request.url, true).query;
+	var key = queryData.key;	
+	var value = queryData.value;
+
+	var statusCode = 200;
+	try {
+		cfgUtil.write.property(key, value);	
+	} catch(e) {
+		statusCode = 500;
+	}
+
+	response.writeHead(statusCode);
+	response.end();
+});
+
+// Put many properties in the cfg
+server.post("/cfg/many", function(request, response) {
+	var queryData = url.parse(request.url, true).query;
+	var propertiesJson = eval("(" + queryData.properties + ")");
+	
+	var statusCode = 200;
+	try {
+		cfgUtil.write.properties(propertiesJson);	
+	} catch(e) {
+		statusCode = 500;
+	}
+
+	response.writeHead(statusCode);
+	response.end();
+});
+
+// Get current branch of repository
+server.get("/git/branch/current", function(request, response) {
+	var queryData = url.parse(request.url, true).query;
+	var path = queryData.path;
+
+	gitUtil.getCurrentBranch(path, function(branchName) {
+		console.log(branchName);
+		response.writeHead(200);
+		response.end();
+	});
+});
+
+server.get("/git/refs", function(request, response){
+	var queryData = url.parse(request.url, true).query;
+	var path = queryData.path;
+
+	// Get the references from a git repository
+	gitUtil.getReferences(path, function(references){
+		response.writeHead(200);
+		response.end(references);
+	});
+
+});
+
 
 function readHttpFile(path, encoding, callback) {
 	var url = "http/" + path;

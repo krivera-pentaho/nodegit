@@ -12,7 +12,7 @@
 			<!-- Header -->
 			<div id="header" class="row-fluid">
 				<div class="span12 text-center">
-					<h1>Git</h1>
+					<h1>Git Node</h1>
 				</div>
 			</div>
 
@@ -21,12 +21,24 @@
 				<div id="body" class="row-fluid">
 					<div id="nav" class="span2 text-center well">
 						<ul class="nav nav-pills nav-stacked">
-							<li class="active"><a href="#">Home</a></li>
-							<li><a href="#">TEST</a></li>
+							<li id="home-nav" class="active"><a href="#">Home</a></li>							
 						</ul>
-						<button id="add-repo-btn" class="btn">Add Repo</button>
 					</div>
-					<div id="content" class="span10 text-center well">
+
+					<div id="content" class="span10 text-left well">
+						<h2>Repositories</h2>
+						<a id="add-repo-btn" class='btn' href="#">Add Repository</a>
+						<div id="repository-objects" class="well"></div>
+
+						<div id="repository-references" class="well">
+							<h3>Repository References</h3>
+							<div id="local-references" class="well">
+							</div>
+
+							<div id="remote-references" class="well">
+							</div>
+						</div>
+						<div id="alert-bar"></div>
 					</div>				
 				</div>
 			</div>
@@ -40,28 +52,42 @@
 		</div>
 
 		<!-- MODALS -->
-		<div id="add-repo-modal" class="modal hide fade">
+		<div id="repo-info-modal" class="modal hide fade">
 			<div class="modal-header">
-		    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		    	<h3>Add Repository</h3>
-		  	</div>
-		  	<div class="modal-body">
-		  		<label id="repo-alias-label" for="repo-path">Repository Alias:</label>
-				<input id="repo-alias"></input>
-				<br />
-				<label id="repo-path-label" for="repo-path">Local Path:</label>
-				<input id="repo-path"></input>
-		  	</div>
-		  	<div class="modal-footer">
-		    	<a href="#" class="btn" data-dismiss="modal">Cancel</a>
-		    	<a id="add-repo-path-btn" href="#" class="btn btn-primary">Add</a>
-		  	</div>
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h3 class="add">Add Repository</h3>
+				<h3 class="edit">Edit Repository</h3>
+			</div>
+			<div class="modal-body form-horizontal">
+				<div class="control-group">
+					<label id="repo-alias-label" class="control-label" for="repo-alias">Repository Alias</label>
+
+					<div class="controls">
+						<input id="repo-alias"></input>
+					</div>
+				</div>
+
+				<div class="control-group">
+					<label id="repo-path-label" class="control-label" for="repo-path">Local Path</label>
+					<div class="controls">
+						<input id="repo-path"></input>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<a href="#" class="btn" data-dismiss="modal">Cancel</a>
+				<a id="add-repo-path-btn" href="#" class="btn btn-primary add">Add</a>
+				<a id="edit-repo-path-btn" href="#" class="btn btn-primary edit">Edit</a>
+			</div>
 		</div>
 
-		<!-- ALERTS -->
-		<div id="alert-container" class="hide">
-		  <button type="button" class="close" data-dismiss="alert">&times;</button>
-		  <div id="alert-message"></div>		  
+		<div id="repository-object-context-menu">
+			<ul class="dropdown-menu" role="menu">
+				<li><a tabindex="-1" href="#" id="update-repo-context">Update from Upstream</a></li>
+				<li><a tabindex="-1" href="#" id="edit-repo-context">Edit</a></li>
+				<li><a tabindex="-1" href="#" id="remove-repo-context">Remove</a></li>
+			</ul>
 		</div>
+
 	</body>
 </html>
