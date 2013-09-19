@@ -118,9 +118,7 @@ server.get("/git/refs", function(request, response){
 		response.writeHead(200);
 		response.end(references);
 	});
-
 });
-
 
 function readHttpFile(path, encoding, callback) {
 	var url = "http/" + path;

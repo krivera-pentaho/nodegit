@@ -181,7 +181,7 @@ require(['jquery'], function() {
 					for (var i = 0; i < repos.length; i++) {
 						var repo = repos[i];
 
-						var $repoObj = $(repositoryTemplate({
+						var $repoObj = $(repositoryObjectTemplate({
 							"title": repo.alias,
 							"path": repo.path
 						}));
@@ -193,8 +193,11 @@ require(['jquery'], function() {
 
 						// Bind click for repo objects
 						$repoObj.bind("click contextmenu", function() {
+							var $this = $(this);
 							$(".repository-object").removeClass("active");
-							$(this).addClass("active");
+							$this.addClass("active");
+
+							updateReferences($this.attr("alias"), $this.attr("path"));
 						});
 
 						// Add ContextMenu controls
@@ -216,6 +219,44 @@ require(['jquery'], function() {
 				});
 		};
 		updateRepositoryObjects();
+
+		// Updates references for a selected reference
+		function updateReferences(alias, path) {
+			$(".git-references").empty();
+
+			$.get(getBaseUrl("/git/refs?path=") + path, 
+				function success(data){
+					var refs = data.split(",");
+
+					var $localRefs = $("#local-references");
+					var localRef = "refs/heads/";
+
+					var $remoteRefs = $("#remote-references");
+					var remoteRef = "refs/remotes/"
+
+					for (var i = 0; i < refs.length; i++) {
+						var ref = refs[i];						
+
+						var appendTo;
+						var title = ref;
+						if (ref.search(localRef) != -1) {
+							appendTo = $localRefs;
+							title = title.replace(localRef, "");
+						} else if (ref.search(remoteRef) != -1) {
+							appendTo = $remoteRefs;
+							title = title.replace(remoteRef, "");
+						} else {
+							continue;
+						}
+
+						var referenceObject = $(referenceObjectTemplate({
+							title: title
+						}));
+
+						appendTo.append(referenceObject);
+					}
+				});
+		}
 		
 		
 		// Define global variable after handlebars has been required
@@ -227,15 +268,22 @@ require(['jquery'], function() {
 			  	"<div class='alert-message'>{{message}}</div>" +
 			"</div>");
 
-		var repositoryTemplate = Handlebars.compile(
-			"<div class='repository-object img-rounded' data-toggle='context' data-target='#repository-object-context-menu'>"+
+		var repositoryObjectTemplate = Handlebars.compile(
+			"<div class='git-object repository-object img-rounded' data-toggle='context' data-target='#repository-object-context-menu'>"+
 				"<div class='title text-center'>{{title}}</div>"+
 				"<div class='content'>"+
 					"<div><strong>Branch:</strong> {{branch}}</div>"+
 					"<div title='{{path}}'><strong>Path:</strong> {{path}}</div>"+
 					"{{content}}"+
 				"</div>"+
-			"</div>");		
+			"</div>");
+
+		var referenceObjectTemplate = Handlebars.compile(
+			"<div class='git-object reference-object img-rounded'>" +
+				"<div class='title text-center' title='{{title}}'>{{title}}</div>"+
+				"<div class='content'>"+
+				"</div>" +
+			"</div>");
 	});
 });
 
