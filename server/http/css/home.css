@@ -27,6 +27,10 @@
 	user-select: none;
 }
 
+.git-object .content {
+	padding: 4px;
+}
+
 .git-object.active .title {
 	background-color: #08c;	
 }
@@ -38,6 +42,7 @@
 	font-weight: bold;
 	overflow: hidden;
 	padding: 4px;
+	white-space: nowrap;
 }
 
 .repository-object {
@@ -50,6 +55,16 @@
 	height: 75px;
 }
 
+.commit-object.git-object {
+	width: 100%;
+	margin-bottom: 20px;
+}
+
 .repository-object .content {
 	overflow: hidden;
+}
+
+#commit-objects {
+	height: 600px;
+	overflow-y: scroll;
 }

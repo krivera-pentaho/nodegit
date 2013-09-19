@@ -109,6 +109,7 @@ server.get("/git/branch/current", function(request, response) {
 	});
 });
 
+// Get the list of references in a repository
 server.get("/git/refs", function(request, response){
 	var queryData = url.parse(request.url, true).query;
 	var path = queryData.path;
@@ -117,6 +118,34 @@ server.get("/git/refs", function(request, response){
 	gitUtil.getReferences(path, function(references){
 		response.writeHead(200);
 		response.end(references);
+	});
+});
+
+// Get a list of commits from a given branch
+server.get("/git/commits", function(request, response){
+	var queryData = url.parse(request.url, true).query;
+	var path = queryData.path;
+	var branch = queryData.branch;
+	var results = queryData.results;
+
+	// Get the references from a git repository
+	gitUtil.getCommits(path, branch, results, function(commits){
+		response.writeHead(200);
+		response.end(commits);
+	});
+});
+
+// Get diffs of a branch from its oid
+server.get("/git/diffs", function(request, response){
+	var queryData = url.parse(request.url, true).query;
+	var path = queryData.path;
+	var branch = queryData.branch;
+	var sha = queryData.sha;
+
+	// Get the references from a git repository
+	gitUtil.getDiffs(path, branch, sha, function(diffs){
+		response.writeHead(200);
+		response.end(commits);
 	});
 });
 

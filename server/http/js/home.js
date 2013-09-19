@@ -12,9 +12,8 @@ require.config({
 require(['jquery'], function() {
 	require(['handlebars', 'jquery-ui', 'bootstrap/bootstrap.min', 'bootstrap/bootstrap-contextmenu'], function() {
 
-		$.get(getBaseUrl("/git/refs?path=/home/krivera/git/pentaho-platform/"), function success(data){
-
-		});
+		// $.get(getBaseUrl("/git/diffs?path=/home/krivera/git/pentaho-platform/&sha=a0159cb3b47e1343ea0c43f81569534f569ad99d"), function success(data){
+		// });
 
 		// Navigate Home
 		$("#home-nav").bind("click", function(){
@@ -198,6 +197,7 @@ require(['jquery'], function() {
 							$this.addClass("active");
 
 							updateReferences($this.attr("alias"), $this.attr("path"));
+							$("#commit-history-container").hide();
 						});
 
 						// Add ContextMenu controls
@@ -223,6 +223,7 @@ require(['jquery'], function() {
 		// Updates references for a selected reference
 		function updateReferences(alias, path) {
 			$(".git-references").empty();
+			$("#repository-references-container").show();
 
 			$.get(getBaseUrl("/git/refs?path=") + path, 
 				function success(data){
@@ -234,17 +235,31 @@ require(['jquery'], function() {
 					var $remoteRefs = $("#remote-references");
 					var remoteRef = "refs/remotes/"
 
+					var $tagRefs = $("#tag-references");
+					var tagRef = "refs/tags/"
+
 					for (var i = 0; i < refs.length; i++) {
 						var ref = refs[i];						
 
 						var appendTo;
 						var title = ref;
+						var onclick;
 						if (ref.search(localRef) != -1) {
 							appendTo = $localRefs;
 							title = title.replace(localRef, "");
+							onclick = function() {
+								$this = $(this);
+								$this.siblings().removeClass("active");
+								$this.addClass("active");
+								
+								updateCommits(path, title, 10);
+							}
 						} else if (ref.search(remoteRef) != -1) {
 							appendTo = $remoteRefs;
 							title = title.replace(remoteRef, "");
+						} else if (ref.search(tagRef) != -1) {
+							appendTo = $tagRefs;
+							title = title.replace(tagRef, "");
 						} else {
 							continue;
 						}
@@ -252,10 +267,53 @@ require(['jquery'], function() {
 						var referenceObject = $(referenceObjectTemplate({
 							title: title
 						}));
-
+						referenceObject.bind("click", onclick);
 						appendTo.append(referenceObject);
 					}
 				});
+		}
+
+		function updateCommits(path, branch, results) {
+			var progress = $(progressTemplate);
+
+			$("#commit-objects").empty().append(progress);
+			$("#commit-history-container").show();
+			
+			$.get(getBaseUrl("/git/commits?path=" + path + "&branch=" + branch + "&results=" + results), 
+				function success(data){
+					progress.remove();					
+					var commits = eval("(" + data + ")");
+					
+					for (var i = 0; i < commits.length; i++) {
+						var commit = commits[i];
+						
+						var commitObject = $(commitObjectTemplate({
+							title: commit.sha,
+							date: commit.date,
+							author: commit.author,
+							message: commit.message
+						}))
+						.attr("sha", commit.sha)
+						.bind("click", function(){
+							$this = $(this);
+							$this.siblings().removeClass("active");
+							$this.addClass("active");
+								
+							$.get(getBaseUrl("/git/diffs?path=" + path + "&branch=" + branch + "&sha=" + $(this).attr("sha")), 
+								function success(data){
+							 	});
+
+						});
+
+						$("#commit-objects").append(commitObject);
+					}
+
+					$("#commit-objects").append(
+						$(loadMoreCommitsBtn).bind("click",
+							function(){
+								updateCommits(path, branch, results + 10);
+							}));
+				})
 		}
 		
 		
@@ -281,9 +339,25 @@ require(['jquery'], function() {
 		var referenceObjectTemplate = Handlebars.compile(
 			"<div class='git-object reference-object img-rounded'>" +
 				"<div class='title text-center' title='{{title}}'>{{title}}</div>"+
-				"<div class='content'>"+
+				"<div class='content'>"+					
 				"</div>" +
 			"</div>");
+
+		var commitObjectTemplate = Handlebars.compile(
+			"<div class='git-object commit-object img-rounded'>"+
+				"<div class='title text-center' title='{{title}}'>{{title}}</div>"+
+				"<div class='content text-left'>"+
+					"<div><strong>Author: </strong> {{author}}</div>"+
+					"<div><strong>Date: </strong> {{date}}</div>"+
+					"<div><strong>Message: </strong> {{message}}</div>"+
+				"</div>"+
+			"</div>");
+
+		var progressTemplate = "<div class='active progress progress-striped'>"+
+							"<div class='bar' style='width: 100%;''></div>"+
+						"</div>";
+
+		var loadMoreCommitsBtn = "<a class='btn active' href='#'>Load 10 More</a>";
 	});
 });
 
