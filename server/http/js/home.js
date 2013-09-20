@@ -21,9 +21,13 @@ require(['jquery'], function() {
 		});
 
 		// Init options on modal
-		$("#repo-info-modal").modal({
+		$("#repo-info-modal, #repo-remove-confirm-modal").modal({
 			keyboard: true,
 			show: false
+		});
+
+		$("#remove-repo-path-btn").bind("click", function() {
+			repositoryRemove($(".repository-object.active").attr("alias"));
 		});
 
 		// Bind click interactions on add repo button
@@ -122,6 +126,10 @@ require(['jquery'], function() {
 				});
 		}
 
+		function repositoryRemoveDialog() {
+			$("#repo-remove-confirm-modal").modal("show")
+		}
+
 		// Removes a repository object
 		function repositoryRemove(alias, callback, suppressAlert) {
 
@@ -171,6 +179,8 @@ require(['jquery'], function() {
 			var $repositoryObjects = $("#repository-objects");
 
 			$repositoryObjects.empty();
+			$("#repository-references-container").hide();
+			$("#commit-history-container").hide();
 
 			// Add repository objects to main screen
 			$.get(getBaseUrl("/cfg/single?property=repositories"), 
@@ -193,6 +203,11 @@ require(['jquery'], function() {
 						// Bind click for repo objects
 						$repoObj.bind("click contextmenu", function() {
 							var $this = $(this);
+
+							if ($this.hasClass("active")) {
+								return;
+							}
+
 							$(".repository-object").removeClass("active");
 							$this.addClass("active");
 
@@ -209,7 +224,7 @@ require(['jquery'], function() {
 								var id = $(item).attr("id");
 
 								switch (id) {
-									case "remove-repo-context": repositoryRemove(alias); break;
+									case "remove-repo-context": repositoryRemoveDialog(); break;
 									case "edit-repo-context": showEditRepoModal(alias, path); break;
 									case "update-repo-context": break;
 								}
@@ -299,9 +314,9 @@ require(['jquery'], function() {
 							$this.siblings().removeClass("active");
 							$this.addClass("active");
 								
-							$.get(getBaseUrl("/git/diffs?path=" + path + "&branch=" + branch + "&sha=" + $(this).attr("sha")), 
-								function success(data){
-							 	});
+							// $.get(getBaseUrl("/git/diffs?path=" + path + "&branch=" + branch + "&sha=" + $(this).attr("sha")), 
+							// 	function success(data){
+							//  	});
 
 						});
 

@@ -145,7 +145,7 @@ server.get("/git/diffs", function(request, response){
 	// Get the references from a git repository
 	gitUtil.getDiffs(path, branch, sha, function(diffs){
 		response.writeHead(200);
-		response.end(commits);
+		response.end(diffs);
 	});
 });
 
