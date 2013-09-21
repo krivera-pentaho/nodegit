@@ -185,7 +185,14 @@ require(['jquery'], function() {
 			// Add repository objects to main screen
 			$.get(getBaseUrl("/cfg/single?property=repositories"), 
 				function success(data) {
-					var repos = eval("(" + data + ")");					
+					var repos = eval("(" + data + ")");	
+
+					var $repositoryObjectsContainer = $("#repository-objects-container");
+					if (repos.length > 0) {
+						$repositoryObjectsContainer.show();
+					} else {
+						$repositoryObjectsContainer.hide()
+					}			
 
 					for (var i = 0; i < repos.length; i++) {
 						var repo = repos[i];
